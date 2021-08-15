@@ -69,7 +69,8 @@ namespace RedBlackTrees
             if (parent.parent == null)
             {
                 return null;                                // I dont think this should ever happen maybe make exception?
-            } else if (parent == parent.parent.left)
+            } 
+            else if (parent == parent.parent.left)
             {
                 return parent.parent.right;
             }
@@ -84,31 +85,54 @@ namespace RedBlackTrees
             switch (dir)
             {
                 case RotationDirection.left:
-                    if (node.parent.left == node)
+                    if (node.parent == null)
                     {
-                        node.parent.left = node.right;
-                    } else
+                        this.root = node.right;
+                        this.root.parent = null;
+                        node.parent = this.root;
+                        node.right = this.root.left;
+                        this.root.left = node;
+                    } 
+                    else
                     {
-                        node.parent.right = node.right;
+                        if (node.parent.left == node)
+                        {
+                            node.parent.left = node.right;
+                        }
+                        else
+                        {
+                            node.parent.right = node.right;
+                        }
+                        node.right.parent = node.parent;
+                        node.parent = node.right;
+                        node.right = node.right.left;
+                        node.parent.left = node;
                     }
-                    node.right.parent = node.parent;
-                    node.parent = node.right;
-                    node.right = node.right.left;
-                    node.parent.left = node;
                     break;
                 case RotationDirection.right:
-                    if (node.parent.left == node)
+                    if (node.parent == null)
                     {
-                        node.parent.left = node.left;
+                        this.root = node.left;
+                        this.root.parent = null;
+                        node.parent = this.root;
+                        node.left = this.root.right;
+                        this.root.right = node;
                     }
                     else
                     {
-                        node.parent.right = node.left;
+                        if (node.parent.left == node)
+                        {
+                            node.parent.left = node.left;
+                        }
+                        else
+                        {
+                            node.parent.right = node.left;
+                        }
+                        node.left.parent = node.parent;
+                        node.parent = node.left;
+                        node.left = node.left.right;
+                        node.parent.left = node;
                     }
-                    node.left.parent = node.parent;
-                    node.parent = node.left;
-                    node.left = node.left.right;
-                    node.parent.left = node;
                     break;
             }
         }
@@ -123,11 +147,16 @@ namespace RedBlackTrees
 
         private void insertCases(Node<T> node)
         {
-            if (node.parent == null)
+            if (node == null)
+            {
+                return;
+            }
+            else if (node.parent == null)
             {
                 node.colour = false;                        //Root node should always be black
                 return;
-            } else if (node.parent.colour == false)
+            }
+            else if (node.parent.colour == false)
             {
                 return;                                     //if parent is red then you are done
             }
@@ -137,7 +166,8 @@ namespace RedBlackTrees
             if (uncle == null)
             {
                 uncleColour = false;
-            } else
+            }
+            else
             {
                 uncleColour = uncle.colour;
             }
@@ -147,6 +177,7 @@ namespace RedBlackTrees
             {
                 node.parent.colour = false;
                 uncle.colour = false;
+                node.parent.parent.colour = true;
                 this.insertCases(node.parent.parent);
             }
             else
@@ -173,12 +204,14 @@ namespace RedBlackTrees
                         swapColour(node.parent, node.parent.parent);
                         this.rotate(node.parent.parent, RotationDirection.right);
 
-                    }   else
+                    }
+                    else
                     {
                         swapColour(node.parent, node.parent.parent);
                         this.rotate(node.parent.parent, RotationDirection.left);
                     }
                 }
+                this.insertCases(node.parent.parent);
             }
 
         }
@@ -223,7 +256,7 @@ namespace RedBlackTrees
                 return;
             }
 
-            this.insert(this.root, value);   
+            this.insert(this.root, value);
         }
 
         public void deleteNode(T value)
@@ -231,14 +264,40 @@ namespace RedBlackTrees
 
         }
 
-        public List<T> DFS()
+        private List<T> levelTranversal()
         {
-            return new List<T>();
+            Queue<Node<T>> childeren = new Queue<Node<T>>();
+            List<T> levelOrder = new List<T>();
+
+
+            Node<T> currNode;
+
+            childeren.Enqueue(this.root);
+            while(childeren.Count > 0)
+            {
+                currNode = childeren.Dequeue();
+                levelOrder.Add(currNode.value);
+                if (currNode.left != null)
+                {
+                    childeren.Enqueue(currNode.left);
+                }
+                if (currNode.right != null)
+                {
+                    childeren.Enqueue(currNode.right);
+                }
+            }
+            return levelOrder;
+
         }
 
-        public List<T> BFS()
+        public IEnumerable<T> breadthTransversal
         {
-            return new List<T>();
+            get {
+                foreach (T i in this.levelTranversal())
+                {
+                    yield return i;
+                }
+            }
         }
 
         private void transverseInOrder(Node<T> node, List<T> ordered)

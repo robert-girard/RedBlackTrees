@@ -18,17 +18,23 @@ namespace RedBlackTrees
             myTree.addNode(75);
             myTree.addNode(750);
             myTree.addNode(7500);
-            myTree.addNode(75000);
+            myTree.addNode(8000);
             List<int> inOrder = myTree.inOrderTransversal();
 
-            Console.WriteLine("Creating List: ");
+            Console.WriteLine("\nCreating List: ");
             foreach (int i in inOrder)
             {
                 Console.WriteLine(i);
             }
 
-            Console.WriteLine("uisng IEnumerable: ");
+            Console.WriteLine("\nuisng IEnumerable: ");
             foreach (int i in myTree)
+            {
+                Console.WriteLine(i);
+            }
+
+            Console.WriteLine("\nBreadth Transversal: ");
+            foreach (int i in myTree.breadthTransversal)
             {
                 Console.WriteLine(i);
             }
