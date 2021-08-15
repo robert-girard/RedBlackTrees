@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RedBlackTrees
 {
-    class RedBlackTree<T>
+    class RedBlackTree<T> : IEnumerable<T>
     {
         /* RadBlackTree Rules
          * 
@@ -261,5 +262,24 @@ namespace RedBlackTrees
             return ordered;
         }
 
+        
+        public IEnumerator<T> GetEnumerator()
+        {
+            if (this.root == null)
+            {
+                yield break;
+            }
+
+            foreach (T i in this.inOrderTransversal())
+            {
+                yield return i;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+        
     }
 }
