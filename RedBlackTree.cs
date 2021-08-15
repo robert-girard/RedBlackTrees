@@ -125,13 +125,24 @@ namespace RedBlackTrees
             if (node.parent == null)
             {
                 node.colour = false;                        //Root node should always be black
+                return;
             } else if (node.parent.colour == false)
             {
                 return;                                     //if parent is red then you are done
             }
 
             Node<T> uncle = this.getUncle(node);
-            if (uncle.colour == true)
+            bool uncleColour;
+            if (uncle == null)
+            {
+                uncleColour = false;
+            } else
+            {
+                uncleColour = uncle.colour;
+            }
+
+
+            if (uncleColour == true)
             {
                 node.parent.colour = false;
                 uncle.colour = false;
@@ -173,11 +184,11 @@ namespace RedBlackTrees
 
         private void insert(Node<T> node, T value)
         {
-            int comparison = Comparer<T>.Default.Compare(node.value, value);                                //for generic comparisons, returns 0 if ==, -ve if <, or +ve if >
+            int comparison = Comparer<T>.Default.Compare(node.value, value);                                //for generic comparisons, returns 0 if ==, -ve if >, or +ve if <
             if (comparison == 0)
             {
                 throw new DuplicateValueException(string.Format("Value: {0} already in tree", value));
-            } else if (comparison < 0)
+            } else if (comparison > 0)
             {
                 if (node.left == null)
                 {
@@ -187,7 +198,7 @@ namespace RedBlackTrees
                 {
                     this.insert(node.left, value);
                 }
-            } else if (comparison > 0)
+            } else if (comparison < 0)
             {
                 if (node.right == null)
                 {
@@ -229,9 +240,25 @@ namespace RedBlackTrees
             return new List<T>();
         }
 
+        private void transverseInOrder(Node<T> node, List<T> ordered)
+        {
+            if (node == null)
+            {
+                return;
+            }
+
+            this.transverseInOrder(node.left, ordered);
+
+            ordered.Add(node.value);
+
+            this.transverseInOrder(node.right, ordered);
+        }
+
         public List<T> inOrderTransversal()
         {
-            return new List<T>();
+            List<T> ordered = new List<T>();
+            this.transverseInOrder(this.root, ordered);
+            return ordered;
         }
 
     }
