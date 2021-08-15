@@ -8,13 +8,27 @@ namespace RedBlackTrees
 {
     class RedBlackTree<T>
     {
+        /* RadBlackTree Rules
+         * 
+         * 1. Every node has a colour either red or black.
+         * 2. The root of the tree is always black.
+         * 3. There are no two adjacent red nodes (A red node cannot have a red parent or red child).
+         * 4. Every path from a node(including root) to any of its descendants NULL nodes has the same number of black nodes.
+         * 
+        */
+
+        private enum RotationDirection
+        {
+            left,
+            right
+        }
         private class Node<T>
         {
             public Node<T> parent;
             public Node<T> left;
             public Node<T> right;
             public T value;
-            public bool colour;
+            public bool colour;                     // Use true for red and false for black for rule 1
 
             public Node(T value)
             {
@@ -41,8 +55,119 @@ namespace RedBlackTrees
             this.root = null;
         }
 
-        private void cases(Node<T> node)
+        private Node<T> getUncle(Node<T> node)
         {
+            Node<T> parent;
+            if (node.parent == null)
+            {
+                return null;                                // I dont think this should ever happen maybe make exception?
+            }
+
+            parent = node.parent;
+
+            if (parent.parent == null)
+            {
+                return null;                                // I dont think this should ever happen maybe make exception?
+            } else if (parent == parent.parent.left)
+            {
+                return parent.parent.right;
+            }
+            else
+            {
+                return parent.parent.left;
+            }
+        }
+
+        private void rotate(Node<T> node, RotationDirection dir)
+        {
+            switch (dir)
+            {
+                case RotationDirection.left:
+                    if (node.parent.left == node)
+                    {
+                        node.parent.left = node.right;
+                    } else
+                    {
+                        node.parent.right = node.right;
+                    }
+                    node.right.parent = node.parent;
+                    node.parent = node.right;
+                    node.right = node.right.left;
+                    node.parent.left = node;
+                    break;
+                case RotationDirection.right:
+                    if (node.parent.left == node)
+                    {
+                        node.parent.left = node.left;
+                    }
+                    else
+                    {
+                        node.parent.right = node.left;
+                    }
+                    node.left.parent = node.parent;
+                    node.parent = node.left;
+                    node.left = node.left.right;
+                    node.parent.left = node;
+                    break;
+            }
+        }
+
+        private void swapColour(Node<T> node1, Node<T> node2)
+        {
+            bool tempColour = node1.colour;
+            node1.colour = node2.colour;
+            node2.colour = tempColour;
+        }
+
+
+        private void insertCases(Node<T> node)
+        {
+            if (node.parent == null)
+            {
+                node.colour = false;                        //Root node should always be black
+            } else if (node.parent.colour == false)
+            {
+                return;                                     //if parent is red then you are done
+            }
+
+            Node<T> uncle = this.getUncle(node);
+            if (uncle.colour == true)
+            {
+                node.parent.colour = false;
+                uncle.colour = false;
+                this.insertCases(node.parent.parent);
+            }
+            else
+            {
+                if (node == node.parent.left)
+                {
+                    if (node.parent == node.parent.parent.left)
+                    {
+                        swapColour(node.parent, node.parent.parent);
+                        this.rotate(node.parent.parent, RotationDirection.right);
+                    }
+                    else
+                    {
+                        this.rotate(node.parent, RotationDirection.right);
+                        swapColour(node.parent, node.parent.parent);
+                        this.rotate(node.parent.parent, RotationDirection.left);
+                    }
+                }
+                else
+                {
+                    if (node.parent == node.parent.parent.left)
+                    {
+                        this.rotate(node.parent, RotationDirection.left);
+                        swapColour(node.parent, node.parent.parent);
+                        this.rotate(node.parent.parent, RotationDirection.right);
+
+                    }   else
+                    {
+                        swapColour(node.parent, node.parent.parent);
+                        this.rotate(node.parent.parent, RotationDirection.left);
+                    }
+                }
+            }
 
         }
 
@@ -57,7 +182,7 @@ namespace RedBlackTrees
                 if (node.left == null)
                 {
                     node.left = new Node<T>(value, node);
-                    this.cases(node.left);
+                    this.insertCases(node.left);
                 } else
                 {
                     this.insert(node.left, value);
@@ -67,7 +192,7 @@ namespace RedBlackTrees
                 if (node.right == null)
                 {
                     node.right = new Node<T>(value, node);
-                    this.cases(node.right);
+                    this.insertCases(node.right);
                 }
                 else
                 {
@@ -82,6 +207,7 @@ namespace RedBlackTrees
             if (this.root == null)
             {
                 this.root = new Node<T>(value);
+                this.root.colour = false;                   //Root node should always be black
                 return;
             }
 
