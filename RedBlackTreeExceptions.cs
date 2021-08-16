@@ -9,3 +9,12 @@ public class DuplicateValueException : Exception
         : base(message)
     { }
 }
+
+[Serializable]
+public class NodeDoesNotExistException : Exception
+{
+    // Constructors
+    public NodeDoesNotExistException(string message)
+        : base(message)
+    { }
+}

@@ -323,9 +323,69 @@ namespace RedBlackTrees
             return currNode;
         }
 
-        public void deleteNode(T value)
+
+        private void deleteCases(Node<T> node)
         {
             throw new NotImplementedException();
+        }
+
+        private void deleteRecursive(Node<T> node)
+        {
+
+            if (node.left != null && node.right != null)            //node is internal node, swap value with successor and recurse 
+            {
+                Node<T> successor = this.successor(node);
+                T temp = node.value;
+                node.value = successor.value;
+                successor.value = temp;
+                this.deleteRecursive(successor);
+            }
+
+            if (node.left != null)
+            {
+                if (node.colour || node.left.colour)                //both wont be true since true is red and redBlack trees dont have 2 reds as parent/child
+                {
+                    node.value = node.left.value;
+                    node.colour = false;
+                    node.left = null;
+                    GC.Collect();                                   // Garbage collect deleted node
+                }
+                else
+                {
+                    this.deleteCases(node);
+                }
+            }
+            else if (node.right != null)
+            {
+                if (node.colour || node.left.colour)                //both wont be true since true is red and redBlack trees dont have 2 reds as parent/child
+                {
+                    node.value = node.right.value;
+                    node.colour = false;
+                    node.right = null;
+                    GC.Collect();                                   // Garbage collect deleted node
+                }
+                else
+                {
+                    this.deleteCases(node);
+                }
+            }
+            else
+            {
+                this.deleteCases(node);
+            }
+
+        }
+
+        public void deleteNode(T value)
+        {
+            Node<T> node = this.find(this.root, value);
+
+            if (node == null)
+            {
+                throw new NodeDoesNotExistException(String.Format("The tree does not contain value: {0}", value));
+            }
+
+            this.deleteRecursive(node);
         }
 
         private List<T> levelTranversal()
