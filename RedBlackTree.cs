@@ -258,10 +258,58 @@ namespace RedBlackTrees
 
             this.insert(this.root, value);
         }
+       
+        private Node<T> find(Node<T> node, T value)
+        {
+            if (node == null)
+            {
+                return null;
+            }
+
+            int comparison = Comparer<T>.Default.Compare(node.value, value);
+
+            if (comparison == 0)
+            {
+                return node;
+            }
+            else if (comparison > 0)
+            {
+                return this.find(node.left, value);
+            }
+            else
+            {
+                return this.find(node.right, value);
+            }
+        }
+
+        public bool contains(T value)
+        {
+            if (this.find(this.root, value) == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private Node<T> successor(Node<T> node)
+        {
+            Node<T> currNode = node.right;
+            if (currNode == null)
+            {
+                return null;
+            }
+
+            while (currNode.left != null)
+            {
+                currNode = currNode.left;
+            }
+
+            return currNode;
+        }
 
         public void deleteNode(T value)
         {
-
+            throw new NotImplementedException();
         }
 
         private List<T> levelTranversal()

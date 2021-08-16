@@ -7,18 +7,17 @@ namespace RedBlackTrees
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("Hello World!\n");
             RedBlackTree<int> myTree = new RedBlackTree<int>();
-            myTree.addNode(10);
-            myTree.addNode(20);
-            myTree.addNode(1);
-            myTree.addNode(100);
-            myTree.addNode(200);
-            myTree.addNode(50);
-            myTree.addNode(75);
-            myTree.addNode(750);
-            myTree.addNode(7500);
-            myTree.addNode(8000);
+
+            int[] vals = { 10, 20, 1, 100, 200, 50, 75, 750, 7500, 8000 };
+            
+            foreach (int i in vals)
+            {
+                myTree.addNode(i);
+                Console.WriteLine(String.Format("Added value {0} to Tree", i));
+            }
+            
             List<int> inOrder = myTree.inOrderTransversal();
 
             Console.WriteLine("\nCreating List: ");
@@ -38,6 +37,9 @@ namespace RedBlackTrees
             {
                 Console.WriteLine(i);
             }
+
+            Console.WriteLine("\nThe tree conains 5: {0}", myTree.contains(5));
+            Console.WriteLine("The tree conains 750: {0}", myTree.contains(750));
         }
     }
 }
