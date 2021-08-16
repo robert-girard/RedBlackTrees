@@ -58,6 +58,8 @@ namespace RedBlackTrees
 
         private Node<T> getUncle(Node<T> node)
         {
+            /// finds and returns the uncle node of the provided node or null of none exist
+
             Node<T> parent;
             if (node.parent == null)
             {
@@ -82,6 +84,8 @@ namespace RedBlackTrees
 
         private void rotate(Node<T> node, RotationDirection dir)
         {
+            /// perfomrs rotation on the given node in provided direction
+
             switch (dir)
             {
                 case RotationDirection.left:
@@ -147,6 +151,8 @@ namespace RedBlackTrees
 
         private void insertCases(Node<T> node)
         {
+            /// checks the case for a given inserted node and performs rotation/colour swap as per RedBlack Tree Algorithm
+
             if (node == null)
             {
                 return;
@@ -218,6 +224,8 @@ namespace RedBlackTrees
 
         private void insert(Node<T> node, T value)
         {
+            /// performs BST like insertion and calls the helper funciton insertCases to handle RedBlack specific updates including rotations/colour changes
+
             int comparison = Comparer<T>.Default.Compare(node.value, value);                                //for generic comparisons, returns 0 if ==, -ve if >, or +ve if <
             if (comparison == 0)
             {
@@ -249,6 +257,8 @@ namespace RedBlackTrees
 
         public void addNode(T value)
         {
+            /// permits user to add a value to the tree
+
             if (this.root == null)
             {
                 this.root = new Node<T>(value);
@@ -261,6 +271,8 @@ namespace RedBlackTrees
        
         private Node<T> find(Node<T> node, T value)
         {
+            /// recursively search tree for the provided value and returns it if found, else returns null
+
             if (node == null)
             {
                 return null;
@@ -284,6 +296,8 @@ namespace RedBlackTrees
 
         public bool contains(T value)
         {
+            /// returns bools if the tree contains the given value
+         
             if (this.find(this.root, value) == null)
             {
                 return false;
@@ -293,6 +307,8 @@ namespace RedBlackTrees
 
         private Node<T> successor(Node<T> node)
         {
+            /// returns the successor node, next largest valued node, of the given node
+            
             Node<T> currNode = node.right;
             if (currNode == null)
             {
