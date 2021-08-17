@@ -51,9 +51,12 @@ namespace RedBlackTrees
 
         private Node<T> root;
 
+        public int size { get; private set; }
+
         public RedBlackTree()
         {
             this.root = null;
+            this.size = 0;
         }
 
         private static Node<T> getUncle(Node<T> node)
@@ -225,9 +228,11 @@ namespace RedBlackTrees
         {
             /// performs BST like insertion and calls the helper funciton insertCases to handle RedBlack specific updates including rotations/colour changes
 
+            this.size += 1;
             int comparison = Comparer<T>.Default.Compare(node.value, value);                                //for generic comparisons, returns 0 if ==, -ve if >, or +ve if <
             if (comparison == 0)
             {
+                this.size -= 1;
                 throw new DuplicateValueException(string.Format("Value: {0} already in tree", value));
             } else if (comparison > 0)
             {
@@ -262,6 +267,7 @@ namespace RedBlackTrees
             {
                 this.root = new Node<T>(value);
                 this.root.colour = false;                   //Root node should always be black
+                this.size = 1;
                 return;
             }
 
@@ -412,6 +418,8 @@ namespace RedBlackTrees
             }
             else                                                                    // case 3.2.c
             {
+                sibling.colour = false;
+                sibling.parent.colour = true;
                 if (sibling.parent.left == sibling)                                 // case 3.2.c.i
                 {
                     this.rotate(node.parent, RotationDirection.right);
@@ -481,6 +489,7 @@ namespace RedBlackTrees
                 throw new NodeDoesNotExistException(String.Format("The tree does not contain value: {0}", value));
             }
 
+            this.size -= 1;
             this.deleteRecursive(node);
         }
 
@@ -560,5 +569,9 @@ namespace RedBlackTrees
             return GetEnumerator();
         }
         
+        public void printTree()
+        {
+            
+        }
     }
 }
