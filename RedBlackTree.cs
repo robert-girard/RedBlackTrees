@@ -98,6 +98,7 @@ namespace RedBlackTrees
                         this.root.parent = null;
                         node.parent = this.root;
                         node.right = this.root.left;
+                        this.root.left.parent = node;
                         this.root.left = node;
                     } 
                     else
@@ -123,6 +124,7 @@ namespace RedBlackTrees
                         this.root.parent = null;
                         node.parent = this.root;
                         node.left = this.root.right;
+                        this.root.right.parent = node;
                         this.root.right = node;
                     }
                     else
@@ -604,16 +606,60 @@ namespace RedBlackTrees
             }
         }
 
+        private static void printAtColoured(String value, int row, int col, bool colour)
+        {
+            Console.SetCursorPosition(col, row);
+            if (colour)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+            }
+            Console.Write(value);
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
         public void printTree()
         {
-            Dictionary<T, Tuple<int, int, bool>> nodeLocationColour;  // tuble is: row, col, colour
-
+            int maxHeight = (int)Math.Ceiling(Math.Log2(this.size + 1));
+            int maxLeaves = (int)Math.Pow(2, maxHeight -1 );
             int nodeLength = 0;
-            foreach (Node<T> i in this.getNodes())
+            foreach (T i in this.breadthTransversal)
             {
-                int len = i.value.ToString().Length;
+                int len = i.ToString().Length;
                 nodeLength = nodeLength >= len ? nodeLength : len;
             }
+
+            int maxBaseWidth = maxLeaves * nodeLength + (maxLeaves - 1);
+
+            Dictionary<T, (int row, int col, bool colour)> nodeLocationColour = new Dictionary<T, (int row, int col, bool colour)>();  // tuble is: row, col, colour
+            nodeLocationColour[this.root.value] = (0, (int)(maxBaseWidth/2), this.root.colour);
+            foreach (Node<T> i in this.levelTranversal())
+            {
+                if (i.parent != null)
+                {
+                    int row, col, offset;
+                    row = nodeLocationColour[i.parent.value].row + 1;
+                    col = nodeLocationColour[i.parent.value].col;
+                    offset = (int)Math.Ceiling((maxBaseWidth / Math.Pow(2, row + 1)));
+                    if (i.parent.right == i)
+                    {
+                        col += offset;
+                    }
+                    else
+                    {
+                        col -= offset;
+                    }
+                    nodeLocationColour[i.value] = (row, col, i.colour);
+                }
+            }
+
+            var pos =  Console.GetCursorPosition();
+            foreach (var i in nodeLocationColour)
+            {
+                //Console.WriteLine("Value: {0}, row: {1}, col: {2}, colour: {3}", i.Key.ToString(), i.Value.row, i.Value.col, i.Value.colour);
+                printAtColoured(i.Key.ToString(), pos.Top + i.Value.row, pos.Left + i.Value.col, i.Value.colour);
+            }
+            Console.WriteLine(" ");
+
         }
     }
 }

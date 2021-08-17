@@ -10,14 +10,18 @@ namespace RedBlackTrees
             Console.WriteLine("Hello World!\n");
             RedBlackTree<int> myTree = new RedBlackTree<int>();
 
-            int[] vals = { 10, 20, 1, 100, 200, 50, 75, 750, 7500, 8000 };
-            
+            int[] vals = { 10, 20, 1, 100, 200, 50, 75, 500, 750, 800};
+            //int[] vals = { 10, 20, 1, 100, 200, 50, 75};
+
             foreach (int i in vals)
             {
                 myTree.addNode(i);
                 Console.WriteLine(String.Format("Added value {0} to Tree", i));
             }
-            
+
+            myTree.printTree();
+
+
             IEnumerable<int> inOrder = myTree.inOrderTransversal();
 
             Console.WriteLine("\nCreating List: ");
