@@ -18,7 +18,7 @@ namespace RedBlackTrees
                 Console.WriteLine(String.Format("Added value {0} to Tree", i));
             }
             
-            List<int> inOrder = myTree.inOrderTransversal();
+            IEnumerable<int> inOrder = myTree.inOrderTransversal();
 
             Console.WriteLine("\nCreating List: ");
             foreach (int i in inOrder)

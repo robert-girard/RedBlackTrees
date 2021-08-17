@@ -493,10 +493,10 @@ namespace RedBlackTrees
             this.deleteRecursive(node);
         }
 
-        private List<T> levelTranversal()
+        private List<Node<T>> levelTranversal()
         {
             Queue<Node<T>> childeren = new Queue<Node<T>>();
-            List<T> levelOrder = new List<T>();
+            List<Node<T>> levelOrder = new List<Node<T>>();
 
 
             Node<T> currNode;
@@ -505,7 +505,7 @@ namespace RedBlackTrees
             while(childeren.Count > 0)
             {
                 currNode = childeren.Dequeue();
-                levelOrder.Add(currNode.value);
+                levelOrder.Add(currNode);
                 if (currNode.left != null)
                 {
                     childeren.Enqueue(currNode.left);
@@ -522,14 +522,14 @@ namespace RedBlackTrees
         public IEnumerable<T> breadthTransversal
         {
             get {
-                foreach (T i in this.levelTranversal())
+                foreach (Node<T> i in this.levelTranversal())
                 {
-                    yield return i;
+                    yield return i.value;
                 }
             }
         }
 
-        private void transverseInOrder(Node<T> node, List<T> ordered)
+        private void transverseInOrder(Node<T> node, List<Node<T>> ordered)
         {
             if (node == null)
             {
@@ -538,16 +538,16 @@ namespace RedBlackTrees
 
             this.transverseInOrder(node.left, ordered);
 
-            ordered.Add(node.value);
+            ordered.Add(node);
 
             this.transverseInOrder(node.right, ordered);
         }
 
-        public List<T> inOrderTransversal()
+        public IEnumerable<T> inOrderTransversal()
         {
-            List<T> ordered = new List<T>();
+            List<Node<T>> ordered = new List<Node<T>>();
             this.transverseInOrder(this.root, ordered);
-            return ordered;
+            return ordered.Select(i => i.value);
         }
 
         
@@ -568,10 +568,52 @@ namespace RedBlackTrees
         {
             return GetEnumerator();
         }
-        
+
+        private HashSet<Node<T>> getNodes()
+        {
+            return getNodes(this.root);
+        }
+
+        private HashSet<Node<T>> getNodes(Node<T> node)
+        {
+            HashSet<Node<T>> temp;
+            if (node.left == null && node.right == null)
+            {
+                temp = new HashSet<Node<T>>();
+                temp.Add(node);
+                return temp;
+            }
+            else if (node.left == null)
+            {
+                temp = getNodes(node.right);
+                temp.Add(node);
+                return temp;
+            }
+            else if (node.right == null)
+            {
+                temp = getNodes(node.left);
+                temp.Add(node);
+                return temp;
+            }
+            else
+            {
+                temp = getNodes(node.right);
+                temp.Add(node);
+                temp.UnionWith(getNodes(node.left));
+                return temp;
+            }
+        }
+
         public void printTree()
         {
-            
+            Dictionary<T, Tuple<int, int, bool>> nodeLocationColour;  // tuble is: row, col, colour
+
+            int nodeLength = 0;
+            foreach (Node<T> i in this.getNodes())
+            {
+                int len = i.value.ToString().Length;
+                nodeLength = nodeLength >= len ? nodeLength : len;
+            }
         }
     }
 }
