@@ -56,7 +56,7 @@ namespace RedBlackTrees
             this.root = null;
         }
 
-        private Node<T> getUncle(Node<T> node)
+        private static Node<T> getUncle(Node<T> node)
         {
             /// finds and returns the uncle node of the provided node or null of none exist
 
@@ -141,13 +141,12 @@ namespace RedBlackTrees
             }
         }
 
-        private void swapColour(Node<T> node1, Node<T> node2)
+        private static void swapColour(Node<T> node1, Node<T> node2)
         {
             bool tempColour = node1.colour;
             node1.colour = node2.colour;
             node2.colour = tempColour;
         }
-
 
         private void insertCases(Node<T> node)
         {
@@ -167,7 +166,7 @@ namespace RedBlackTrees
                 return;                                     //if parent is red then you are done
             }
 
-            Node<T> uncle = this.getUncle(node);
+            Node<T> uncle = getUncle(node);
             bool uncleColour;
             if (uncle == null)
             {
@@ -305,7 +304,7 @@ namespace RedBlackTrees
             return true;
         }
 
-        private Node<T> successor(Node<T> node)
+        private static Node<T> successor(Node<T> node)
         {
             /// returns the successor node, next largest valued node, of the given node
             
@@ -323,10 +322,107 @@ namespace RedBlackTrees
             return currNode;
         }
 
-
-        private void deleteCases(Node<T> node)
+        private static Node<T> sibling(Node<T> node)
         {
-            throw new NotImplementedException();
+            if (node.parent == null)
+            {
+                throw new NodeDoesNotExistException("Node does not have parent so cannot have sibing");
+            }
+            if (node == node.parent.left)
+            {
+                return node.parent.right;
+            }
+            else
+            {
+                return node.parent.left;
+            }
+        }
+
+        private static bool colour(Node<T> node)
+        {
+            if (node == null)
+            {
+                return false;
+            }
+            else
+            {
+                return node.colour;
+            }
+        }
+
+        private void doubleBlackCases(Node<T> node)
+        {
+            if (node == null)
+            {
+                return;
+            }
+            else if (node.parent == null)
+            {
+                node.colour = false;
+                return;
+            }
+
+            Node<T> sibling = RedBlackTree<T>.sibling(node);
+            if (sibling == null)
+            {
+                doubleBlackCases(node.parent);
+            }
+            else if (sibling.colour == false)                                                
+            {
+                if (colour(sibling.left) == true || colour(sibling.right) == true)  // case 3.2.a
+                {
+                    if (sibling.parent.left == sibling)
+                    {
+                        if (colour(sibling.left) == true)                           // case 3.2.a.i
+                        {
+                            sibling.left.colour = false;
+                            this.rotate(node.parent, RotationDirection.right);
+                        }
+                        else                                                        // case 3.2.a.ii
+                        {
+                            sibling.right.colour = false;
+                            this.rotate(sibling, RotationDirection.left);
+                            this.rotate(node.parent, RotationDirection.right);
+                        }
+                    }
+                    else
+                    {
+                        if (colour(sibling.right) == true)                          // case 3.2.a.iii
+                        {
+                            sibling.right.colour = false;
+                            this.rotate(node.parent, RotationDirection.left);
+                        }
+                        else                                                        // case 3.2.a.iv
+                        {
+                            sibling.left.colour = false;
+                            this.rotate(sibling, RotationDirection.right);
+                            this.rotate(node.parent, RotationDirection.left);
+                        }
+
+                    }
+                }
+                else                                                                // case 3.2.b
+                {
+                    sibling.colour = true;
+                    if (node.parent.colour == true)
+                    {
+                        doubleBlackCases(node.parent);
+                    }
+                }
+            }
+            else                                                                    // case 3.2.c
+            {
+                if (sibling.parent.left == sibling)                                 // case 3.2.c.i
+                {
+                    this.rotate(node.parent, RotationDirection.right);
+                }
+                else                                                                // case 3.2.c.ii
+                {
+                    this.rotate(node.parent, RotationDirection.left);
+                }
+                doubleBlackCases(node);
+            }
+
         }
 
         private void deleteRecursive(Node<T> node)
@@ -334,7 +430,7 @@ namespace RedBlackTrees
 
             if (node.left != null && node.right != null)            //node is internal node, swap value with successor and recurse 
             {
-                Node<T> successor = this.successor(node);
+                Node<T> successor = RedBlackTree<T>.successor(node);
                 T temp = node.value;
                 node.value = successor.value;
                 successor.value = temp;
@@ -352,7 +448,7 @@ namespace RedBlackTrees
                 }
                 else
                 {
-                    this.deleteCases(node);
+                    this.doubleBlackCases(node);
                 }
             }
             else if (node.right != null)
@@ -366,12 +462,12 @@ namespace RedBlackTrees
                 }
                 else
                 {
-                    this.deleteCases(node);
+                    this.doubleBlackCases(node);
                 }
             }
             else
             {
-                this.deleteCases(node);
+                this.doubleBlackCases(node);
             }
 
         }
