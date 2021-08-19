@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RedBlackTrees
 {
-    class RedBlackTree<T> : IEnumerable<T>
+    class RedBlackTree<T> : IEnumerable<T>, IEquatable<RedBlackTree>
     {
         /* RadBlackTree Rules
          * 
@@ -23,7 +23,7 @@ namespace RedBlackTrees
             left,
             right
         }
-        private class Node<T>
+        private class Node<T> : IEquatable<Node<T>>
         {
             public Node<T> parent;
             public Node<T> left;
@@ -46,6 +46,51 @@ namespace RedBlackTrees
                 this.left = null;
                 this.right = null;
                 this.parent = parent;
+            }
+
+            public bool Equals(RedBlackTree<T>.Node<T> other)
+            {
+                if (other == null)
+                {
+                    return false;
+                }
+
+                if (this.colour != other.colour)
+                {
+                    return false;
+                }
+                else if (!EqualityComparer<T>.Default.Equals(this.value, other.value))
+                {
+                    return false;
+                }
+                else if ((this.parent == null || other.parent == null) && (this.parent != null || other.parent != null))
+                {
+                    return false; 
+                }
+                else if (!this.parent.Equals(other))
+                {
+                    return false;
+                }
+                else if ((this.left == null || other.left == null) && (this.left != null || other.left != null))
+                {
+                    return false;
+                }
+                else if (!this.left.Equals(other))
+                {
+                    return false;
+                }
+                else if ((this.right == null || other.right == null) && (this.right != null || other.right != null))
+                {
+                    return false;
+                }
+                else if (!this.right.Equals(other))
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
             }
         }
 
@@ -660,6 +705,26 @@ namespace RedBlackTrees
             }
             Console.WriteLine(" ");
 
+        }
+
+        public bool Equals(RedBlackTree<T> other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+            else if (this.size != other.size)
+            {
+                return false;
+            }
+            else if (!this.levelTranversal().SequenceEqual(other.levelTranversal()))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
     }
 }
