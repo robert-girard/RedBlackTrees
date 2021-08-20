@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RedBlackTrees
 {
-    class RedBlackTree<T> : IEnumerable<T>, IEquatable<RedBlackTree>
+    class RedBlackTree<T> : IEnumerable<T>, IEquatable<RedBlackTree<T>>
     {
         /* RadBlackTree Rules
          * 
@@ -48,48 +48,15 @@ namespace RedBlackTrees
                 this.parent = parent;
             }
 
-            public bool Equals(RedBlackTree<T>.Node<T> other)
+            public bool Equals(Node<T> other)
             {
                 if (other == null)
                 {
                     return false;
                 }
-
-                if (this.colour != other.colour)
+                else 
                 {
-                    return false;
-                }
-                else if (!EqualityComparer<T>.Default.Equals(this.value, other.value))
-                {
-                    return false;
-                }
-                else if ((this.parent == null || other.parent == null) && (this.parent != null || other.parent != null))
-                {
-                    return false; 
-                }
-                else if (!this.parent.Equals(other))
-                {
-                    return false;
-                }
-                else if ((this.left == null || other.left == null) && (this.left != null || other.left != null))
-                {
-                    return false;
-                }
-                else if (!this.left.Equals(other))
-                {
-                    return false;
-                }
-                else if ((this.right == null || other.right == null) && (this.right != null || other.right != null))
-                {
-                    return false;
-                }
-                else if (!this.right.Equals(other))
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
+                    return (this.colour == other.colour && this.value.Equals(other.value));
                 }
             }
         }
@@ -707,24 +674,114 @@ namespace RedBlackTrees
 
         }
 
+        private List<Node<T>> getLeaves()
+        {
+            if (this.size > 0)
+            {
+                return this.getLeaves(this.root);
+            }
+            else
+            {
+                return new List<Node<T>>();
+            }
+        }
+
+        private List<Node<T>> getLeaves(Node<T> node)
+        {
+            List<Node<T>> leaves = new List<Node<T>>();
+
+            if (node.left == null && node.right == null)
+            { 
+                leaves.Add(node);
+                return leaves;
+            }
+            else if (node.left != null)
+            {
+                leaves.Concat(getLeaves(node.left));
+            }
+            else if (node.right != null)
+            {
+                leaves.Concat(getLeaves(node.right));
+            }
+            return leaves;
+
+        }
+
+        private static bool parentComparer(Node<T> node1, Node<T> node2)
+        {
+            if (node1.parent == null && node2.parent == null)
+            {
+                return node1.Equals(node2);
+            }    
+            else if (node1.parent == null || node2.parent == null)
+            {
+                return false;
+            }
+            else if (node1.Equals(node2))
+            {
+                return parentComparer(node1.parent, node2.parent);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private static bool isLeaf(Node<T> node)
+        {
+            if (node.left == null && node.right == null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private static bool treeComparer(Node<T> node1, Node<T> node2)
+        {
+            if (isLeaf(node1) && isLeaf(node2))
+            {
+                if  (node1.Equals(node2))
+                {
+                    return parentComparer(node1, node2);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else if (isLeaf(node1) && isLeaf(node2))
+            {
+                return false;
+            }
+            else if (!treeComparer(node1.left, node2.left))
+            {
+                return false;
+            }
+            else if (!treeComparer(node1.right, node2.right))
+            {
+                return false;
+            }
+            else if (node1.Equals(node2))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public bool Equals(RedBlackTree<T> other)
         {
             if (other == null)
             {
                 return false;
             }
-            else if (this.size != other.size)
-            {
-                return false;
-            }
-            else if (!this.levelTranversal().SequenceEqual(other.levelTranversal()))
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+
+            return treeComparer(this.root, other.root);
         }
     }
 }
