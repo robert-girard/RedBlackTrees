@@ -2,12 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace RedBlackTrees
+namespace Trees
 {
-    class RedBlackTree<T> : IEnumerable<T>, IEquatable<RedBlackTree<T>>
+    class RedBlackTree<T> : BST<T>, IEquatable<RedBlackTree<T>>
     {
         /* RadBlackTree Rules
          * 
@@ -18,52 +16,14 @@ namespace RedBlackTrees
          * 
         */
 
-        private enum RotationDirection
+        protected new ColouredNode<T> root
         {
-            left,
-            right
-        }
-        private class Node<T> : IEquatable<Node<T>>
-        {
-            public Node<T> parent;
-            public Node<T> left;
-            public Node<T> right;
-            public T value;
-            public bool colour;                     // Use true for red and false for black for rule 1
-
-            public Node(T value)
+            get => (ColouredNode<T>)base.root;
+            set
             {
-                this.value = value;
-                this.colour = true;
-                this.left = null;
-                this.right = null;
-                this.parent = null;
-            }
-            public Node(T value, Node<T> parent)
-            {
-                this.value = value;
-                this.colour = true;
-                this.left = null;
-                this.right = null;
-                this.parent = parent;
-            }
-
-            public bool Equals(Node<T> other)
-            {
-                if (other == null)
-                {
-                    return false;
-                }
-                else 
-                {
-                    return (this.colour == other.colour && this.value.Equals(other.value));
-                }
+                base.root = (Node<T>)value;
             }
         }
-
-        private Node<T> root;
-
-        public int size { get; private set; }
 
         public RedBlackTree()
         {
@@ -71,101 +31,15 @@ namespace RedBlackTrees
             this.size = 0;
         }
 
-        private static Node<T> getUncle(Node<T> node)
-        {
-            /// finds and returns the uncle node of the provided node or null of none exist
 
-            Node<T> parent;
-            if (node.parent == null)
-            {
-                return null;                                // I dont think this should ever happen maybe make exception?
-            }
-
-            parent = node.parent;
-
-            if (parent.parent == null)
-            {
-                return null;                                // I dont think this should ever happen maybe make exception?
-            } 
-            else if (parent == parent.parent.left)
-            {
-                return parent.parent.right;
-            }
-            else
-            {
-                return parent.parent.left;
-            }
-        }
-
-        private void rotate(Node<T> node, RotationDirection dir)
-        {
-            /// perfomrs rotation on the given node in provided direction
-
-            switch (dir)
-            {
-                case RotationDirection.left:
-                    if (node.parent == null)
-                    {
-                        this.root = node.right;
-                        this.root.parent = null;
-                        node.parent = this.root;
-                        node.right = this.root.left;
-                        this.root.left.parent = node;
-                        this.root.left = node;
-                    } 
-                    else
-                    {
-                        if (node.parent.left == node)
-                        {
-                            node.parent.left = node.right;
-                        }
-                        else
-                        {
-                            node.parent.right = node.right;
-                        }
-                        node.right.parent = node.parent;
-                        node.parent = node.right;
-                        node.right = node.right.left;
-                        node.parent.left = node;
-                    }
-                    break;
-                case RotationDirection.right:
-                    if (node.parent == null)
-                    {
-                        this.root = node.left;
-                        this.root.parent = null;
-                        node.parent = this.root;
-                        node.left = this.root.right;
-                        this.root.right.parent = node;
-                        this.root.right = node;
-                    }
-                    else
-                    {
-                        if (node.parent.left == node)
-                        {
-                            node.parent.left = node.left;
-                        }
-                        else
-                        {
-                            node.parent.right = node.left;
-                        }
-                        node.left.parent = node.parent;
-                        node.parent = node.left;
-                        node.left = node.left.right;
-                        node.parent.left = node;
-                    }
-                    break;
-            }
-        }
-
-        private static void swapColour(Node<T> node1, Node<T> node2)
+        private static void swapColour(ColouredNode<T> node1, ColouredNode<T> node2)
         {
             bool tempColour = node1.colour;
             node1.colour = node2.colour;
             node2.colour = tempColour;
         }
 
-        private void insertCases(Node<T> node)
+        private void insertCases(ColouredNode<T> node)
         {
             /// checks the case for a given inserted node and performs rotation/colour swap as per RedBlack Tree Algorithm
 
@@ -183,7 +57,7 @@ namespace RedBlackTrees
                 return;                                     //if parent is red then you are done
             }
 
-            Node<T> uncle = getUncle(node);
+            ColouredNode<T> uncle = (ColouredNode<T>)getUncle(node);
             bool uncleColour;
             if (uncle == null)
             {
@@ -238,7 +112,7 @@ namespace RedBlackTrees
 
         }
 
-        private void insert(Node<T> node, T value)
+        private void insert(ColouredNode<T> node, T value)
         {
             /// performs BST like insertion and calls the helper funciton insertCases to handle RedBlack specific updates including rotations/colour changes
 
@@ -252,7 +126,7 @@ namespace RedBlackTrees
             {
                 if (node.left == null)
                 {
-                    node.left = new Node<T>(value, node);
+                    node.left = new ColouredNode<T>(value, node);
                     this.insertCases(node.left);
                 } else
                 {
@@ -262,7 +136,7 @@ namespace RedBlackTrees
             {
                 if (node.right == null)
                 {
-                    node.right = new Node<T>(value, node);
+                    node.right = new ColouredNode<T>(value, node);
                     this.insertCases(node.right);
                 }
                 else
@@ -273,13 +147,13 @@ namespace RedBlackTrees
 
         }
 
-        public void addNode(T value)
+        public override void insert(T value)
         {
             /// permits user to add a value to the tree
 
             if (this.root == null)
             {
-                this.root = new Node<T>(value);
+                this.root = new ColouredNode<T>(value);
                 this.root.colour = false;                   //Root node should always be black
                 this.size = 1;
                 return;
@@ -287,78 +161,8 @@ namespace RedBlackTrees
 
             this.insert(this.root, value);
         }
-       
-        private Node<T> find(Node<T> node, T value)
-        {
-            /// recursively search tree for the provided value and returns it if found, else returns null
 
-            if (node == null)
-            {
-                return null;
-            }
-
-            int comparison = Comparer<T>.Default.Compare(node.value, value);
-
-            if (comparison == 0)
-            {
-                return node;
-            }
-            else if (comparison > 0)
-            {
-                return this.find(node.left, value);
-            }
-            else
-            {
-                return this.find(node.right, value);
-            }
-        }
-
-        public bool contains(T value)
-        {
-            /// returns bools if the tree contains the given value
-         
-            if (this.find(this.root, value) == null)
-            {
-                return false;
-            }
-            return true;
-        }
-
-        private static Node<T> successor(Node<T> node)
-        {
-            /// returns the successor node, next largest valued node, of the given node
-            
-            Node<T> currNode = node.right;
-            if (currNode == null)
-            {
-                return null;
-            }
-
-            while (currNode.left != null)
-            {
-                currNode = currNode.left;
-            }
-
-            return currNode;
-        }
-
-        private static Node<T> sibling(Node<T> node)
-        {
-            if (node.parent == null)
-            {
-                throw new NodeDoesNotExistException("Node does not have parent so cannot have sibing");
-            }
-            if (node == node.parent.left)
-            {
-                return node.parent.right;
-            }
-            else
-            {
-                return node.parent.left;
-            }
-        }
-
-        private static bool colour(Node<T> node)
+        private static bool colour(ColouredNode<T> node)
         {
             if (node == null)
             {
@@ -370,7 +174,12 @@ namespace RedBlackTrees
             }
         }
 
-        private void doubleBlackCases(Node<T> node)
+        protected ColouredNode<T> sibling(ColouredNode<T> node)
+        {
+            return (ColouredNode<T>)base.sibling((Node<T>)node);
+        }
+
+        private void doubleBlackCases(ColouredNode<T> node)
         {
             if (node == null)
             {
@@ -382,7 +191,7 @@ namespace RedBlackTrees
                 return;
             }
 
-            Node<T> sibling = RedBlackTree<T>.sibling(node);
+            ColouredNode<T> sibling = this.sibling(node);
             if (sibling == null)
             {
                 doubleBlackCases(node.parent);
@@ -447,12 +256,12 @@ namespace RedBlackTrees
 
         }
 
-        private void deleteRecursive(Node<T> node)
+        protected void deleteRecursive(ColouredNode<T> node)
         {
 
             if (node.left != null && node.right != null)            //node is internal node, swap value with successor and recurse 
             {
-                Node<T> successor = RedBlackTree<T>.successor(node);
+                ColouredNode<T> successor = (ColouredNode<T>)RedBlackTree<T>.successor((Node<T>)node);
                 T temp = node.value;
                 node.value = successor.value;
                 successor.value = temp;
@@ -494,9 +303,9 @@ namespace RedBlackTrees
 
         }
 
-        public void deleteNode(T value)
+        public override void delete(T value)
         {
-            Node<T> node = this.find(this.root, value);
+            ColouredNode<T> node = (ColouredNode<T>)this.find((Node<T>)this.root, value);
 
             if (node == null)
             {
@@ -507,93 +316,17 @@ namespace RedBlackTrees
             this.deleteRecursive(node);
         }
 
-        private List<Node<T>> levelTranversal()
-        {
-            Queue<Node<T>> childeren = new Queue<Node<T>>();
-            List<Node<T>> levelOrder = new List<Node<T>>();
-
-
-            Node<T> currNode;
-
-            childeren.Enqueue(this.root);
-            while(childeren.Count > 0)
-            {
-                currNode = childeren.Dequeue();
-                levelOrder.Add(currNode);
-                if (currNode.left != null)
-                {
-                    childeren.Enqueue(currNode.left);
-                }
-                if (currNode.right != null)
-                {
-                    childeren.Enqueue(currNode.right);
-                }
-            }
-            return levelOrder;
-
-        }
-
-        public IEnumerable<T> breadthTransversal
-        {
-            get {
-                foreach (Node<T> i in this.levelTranversal())
-                {
-                    yield return i.value;
-                }
-            }
-        }
-
-        private void transverseInOrder(Node<T> node, List<Node<T>> ordered)
-        {
-            if (node == null)
-            {
-                return;
-            }
-
-            this.transverseInOrder(node.left, ordered);
-
-            ordered.Add(node);
-
-            this.transverseInOrder(node.right, ordered);
-        }
-
-        public IEnumerable<T> inOrderTransversal()
-        {
-            List<Node<T>> ordered = new List<Node<T>>();
-            this.transverseInOrder(this.root, ordered);
-            return ordered.Select(i => i.value);
-        }
-
-        
-        public IEnumerator<T> GetEnumerator()
-        {
-            if (this.root == null)
-            {
-                yield break;
-            }
-
-            foreach (T i in this.inOrderTransversal())
-            {
-                yield return i;
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        private HashSet<Node<T>> getNodes()
+        private HashSet<ColouredNode<T>> getNodes()
         {
             return getNodes(this.root);
         }
 
-        private HashSet<Node<T>> getNodes(Node<T> node)
+        private HashSet<ColouredNode<T>> getNodes(ColouredNode<T> node)
         {
-            HashSet<Node<T>> temp;
+            HashSet<ColouredNode<T>> temp;
             if (node.left == null && node.right == null)
             {
-                temp = new HashSet<Node<T>>();
+                temp = new HashSet<ColouredNode<T>>();
                 temp.Add(node);
                 return temp;
             }
@@ -629,6 +362,7 @@ namespace RedBlackTrees
             Console.ForegroundColor = ConsoleColor.White;
         }
 
+
         public void printTree()
         {
             int maxHeight = (int)Math.Ceiling(Math.Log2(this.size + 1));
@@ -644,7 +378,7 @@ namespace RedBlackTrees
 
             Dictionary<T, (int row, int col, bool colour)> nodeLocationColour = new Dictionary<T, (int row, int col, bool colour)>();  // tuble is: row, col, colour
             nodeLocationColour[this.root.value] = (0, (int)(maxBaseWidth/2), this.root.colour);
-            foreach (Node<T> i in this.levelTranversal())
+            foreach (ColouredNode<T> i in this.levelTranversal())
             {
                 if (i.parent != null)
                 {
@@ -674,40 +408,8 @@ namespace RedBlackTrees
 
         }
 
-        private List<Node<T>> getLeaves()
-        {
-            if (this.size > 0)
-            {
-                return this.getLeaves(this.root);
-            }
-            else
-            {
-                return new List<Node<T>>();
-            }
-        }
 
-        private List<Node<T>> getLeaves(Node<T> node)
-        {
-            List<Node<T>> leaves = new List<Node<T>>();
-
-            if (node.left == null && node.right == null)
-            { 
-                leaves.Add(node);
-                return leaves;
-            }
-            else if (node.left != null)
-            {
-                leaves.Concat(getLeaves(node.left));
-            }
-            else if (node.right != null)
-            {
-                leaves.Concat(getLeaves(node.right));
-            }
-            return leaves;
-
-        }
-
-        private static bool parentComparer(Node<T> node1, Node<T> node2)
+        private static bool parentComparer(ColouredNode<T> node1, ColouredNode<T> node2)
         {
             if (node1.parent == null && node2.parent == null)
             {
@@ -727,21 +429,10 @@ namespace RedBlackTrees
             }
         }
 
-        private static bool isLeaf(Node<T> node)
-        {
-            if (node.left == null && node.right == null)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
 
-        private static bool treeComparer(Node<T> node1, Node<T> node2)
+        private static bool treeComparer(ColouredNode<T> node1, ColouredNode<T> node2)
         {
-            if (isLeaf(node1) && isLeaf(node2))
+            if (Tree<T>.isLeaf(node1) && isLeaf(node2))
             {
                 if  (node1.Equals(node2))
                 {
@@ -773,6 +464,8 @@ namespace RedBlackTrees
                 return false;
             }
         }
+
+        // Interface implementation methods
 
         public bool Equals(RedBlackTree<T> other)
         {

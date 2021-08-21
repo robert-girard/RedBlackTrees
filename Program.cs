@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace RedBlackTrees
+namespace Trees
 {
     class Program
     {
@@ -15,8 +15,8 @@ namespace RedBlackTrees
 
             foreach (int i in vals)
             {
-                myTree.addNode(i);
-                Console.WriteLine(String.Format("Added value {0} to Tree", i));
+                Console.WriteLine(String.Format("Inserting value {0} to Tree", i));
+                myTree.insert(i);
             }
 
             myTree.printTree();
