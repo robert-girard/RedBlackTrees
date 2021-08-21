@@ -362,7 +362,6 @@ namespace Trees
             Console.ForegroundColor = ConsoleColor.White;
         }
 
-
         public void printTree()
         {
             int maxHeight = (int)Math.Ceiling(Math.Log2(this.size + 1));
@@ -408,7 +407,6 @@ namespace Trees
 
         }
 
-
         private static bool parentComparer(ColouredNode<T> node1, ColouredNode<T> node2)
         {
             if (node1.parent == null && node2.parent == null)
@@ -428,7 +426,6 @@ namespace Trees
                 return false;
             }
         }
-
 
         private static bool treeComparer(ColouredNode<T> node1, ColouredNode<T> node2)
         {
@@ -466,7 +463,6 @@ namespace Trees
         }
 
         // Interface implementation methods
-
         public bool Equals(RedBlackTree<T> other)
         {
             if (other == null)

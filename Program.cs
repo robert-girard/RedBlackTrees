@@ -48,4 +48,4 @@ namespace Trees
     }
 }
 
-// TODO: Unit testing, DFS/BFS, print in tree form
+// TODO: Unit testing (monte Carlo, other value types, critical functions (rotate, insert, delete, sorting)), Serializable, file saving loading, add heaps
