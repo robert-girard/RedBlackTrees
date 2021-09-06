@@ -75,9 +75,14 @@ namespace Trees
                 uncle.colour = false;
                 node.parent.parent.colour = true;
                 this.insertCases(node.parent.parent);
-            }
+            }                                               
             else
             {
+                if (node.parent.parent == null)             //this is an issue
+                {
+                    return;
+                }
+                Console.WriteLine(String.Format("Child: {0}, {1}    Parent: {2}, {3}    Grandparent: {4}, {5}", node.value, node.colour, node.parent.value, node.parent.colour, node.parent.parent.value, node.parent.parent.colour));
                 if (node == node.parent.left)
                 {
                     if (node.parent == node.parent.parent.left)
@@ -87,18 +92,18 @@ namespace Trees
                     }
                     else
                     {
+                        swapColour(node, node.parent.parent);
                         this.rotate(node.parent, RotationDirection.right);
-                        swapColour(node.parent, node.parent.parent);
-                        this.rotate(node.parent.parent, RotationDirection.left);
+                        this.rotate(node.parent, RotationDirection.left);
                     }
                 }
                 else
                 {
                     if (node.parent == node.parent.parent.left)
                     {
+                        swapColour(node, node.parent.parent);
                         this.rotate(node.parent, RotationDirection.left);
-                        swapColour(node.parent, node.parent.parent);
-                        this.rotate(node.parent.parent, RotationDirection.right);
+                        this.rotate(node.parent, RotationDirection.right);
 
                     }
                     else
@@ -106,6 +111,10 @@ namespace Trees
                         swapColour(node.parent, node.parent.parent);
                         this.rotate(node.parent.parent, RotationDirection.left);
                     }
+                }
+                if (node.parent == null)
+                {
+                    return;
                 }
                 this.insertCases(node.parent.parent);
             }

@@ -22,6 +22,7 @@ namespace Trees
         {
             this.root = null;
             this.size = 0;
+            Console.SetBufferSize(Console.BufferWidth, 500);
         }
 
         public abstract void insert(T value);
@@ -115,53 +116,37 @@ namespace Trees
                     if (node.parent == null)
                     {
                         this.root = node.right;
-                        this.root.parent = null;
-                        node.parent = this.root;
-                        node.right = this.root.left;
-                        this.root.left.parent = node;
-                        this.root.left = node;
+                    }
+                    else if (node.parent.left == node)
+                    {
+                        node.parent.left = node.right;
                     }
                     else
                     {
-                        if (node.parent.left == node)
-                        {
-                            node.parent.left = node.right;
-                        }
-                        else
-                        {
-                            node.parent.right = node.right;
-                        }
-                        node.right.parent = node.parent;
-                        node.parent = node.right;
-                        node.right = node.right.left;
-                        node.parent.left = node;
+                        node.parent.right = node.right;
                     }
+                    node.right.parent = node.parent;
+                    node.parent = node.right;
+                    node.right = node.right.left;
+                    node.parent.left = node;
                     break;
                 case RotationDirection.right:
                     if (node.parent == null)
                     {
                         this.root = node.left;
-                        this.root.parent = null;
-                        node.parent = this.root;
-                        node.left = this.root.right;
-                        this.root.right.parent = node;
-                        this.root.right = node;
+                    }
+                    else if (node.parent.left == node)
+                    {
+                        node.parent.left = node.left;
                     }
                     else
                     {
-                        if (node.parent.left == node)
-                        {
-                            node.parent.left = node.left;
-                        }
-                        else
-                        {
-                            node.parent.right = node.left;
-                        }
-                        node.left.parent = node.parent;
-                        node.parent = node.left;
-                        node.left = node.left.right;
-                        node.parent.left = node;
+                        node.parent.right = node.left;
                     }
+                    node.left.parent = node.parent;
+                    node.parent = node.left;
+                    node.left = node.left.right;
+                    node.parent.right = node;
                     break;
             }
         }
