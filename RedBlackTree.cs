@@ -116,7 +116,7 @@ namespace Trees
                 {
                     return;
                 }
-                this.insertCases(node.parent.parent);
+                this.insertCases(node.parent);
             }
 
         }
@@ -275,6 +275,24 @@ namespace Trees
                 node.value = successor.value;
                 successor.value = temp;
                 this.deleteRecursive(successor);
+            } else if ((node.left == null && node.right == null))       //this should force garbage collection right?
+            {                                                           
+                if (node.parent == null)
+                {
+                    this.root = null;
+                }
+                else if (node.parent.left == null)
+                {
+                    node.parent.right = null;
+                }
+                else if (node.parent.left == node)
+                {
+                    node.parent.left = null;
+                }
+                else
+                {
+                    node.parent.right = null;
+                }
             }
 
             if (node.left != null)

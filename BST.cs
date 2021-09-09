@@ -161,7 +161,7 @@ namespace Trees
             return true;
         }
 
-        protected virtual List<Node<T>> levelTranversal()
+        public virtual List<Node<T>> levelTranversal()
         {
             Queue<Node<T>> childeren = new Queue<Node<T>>();
             List<Node<T>> levelOrder = new List<Node<T>>();

@@ -70,13 +70,36 @@ namespace Trees
             }
         }
 
+        static void test3()
+        {
+            Console.WriteLine("Hello World!\n");
+            RedBlackTree<int> myTree = new RedBlackTree<int>();
+
+            int[] vals = { 13, 70, 16, 83, 37, 89, 42, 2, 72, 74 };
+            //int[] vals = { 10, 20, 1, 100, 200, 50, 75};
+
+            foreach (int i in vals)
+            {
+                Console.WriteLine(String.Format("Inserting value {0} to Tree", i));
+                myTree.insert(i);
+                myTree.printTree();
+            }
+            foreach (Node<int> i in myTree.levelTranversal())
+            {
+                Console.WriteLine(i.value);
+            }
+            myTree.printTree();
+
+            //IEnumerable<int> inOrder = myTree.inOrderTransversal();
+        }
+
         static void deleteTest()
         {
             RedBlackTree<int> myTree = new RedBlackTree<int>();
 
             Random rnd = new Random();
 
-            int len = rnd.Next(10, 30);
+            int len = rnd.Next(10, 20);
 
             for (int i = 0; i < len; i++)
             {
@@ -99,19 +122,21 @@ namespace Trees
             for (int j = 0; j < delLen; j++)
             {
                 int deleteitem = rnd.Next(myList.Count);
-                Console.WriteLine(string.Format("Deleting item: {0}", deleteitem));
-                myTree.delete(deleteitem);
+                Console.WriteLine(string.Format("Deleting item: {0}", myList[deleteitem]));
+                myTree.delete(myList[deleteitem]);
                 myList = new List<int>(myTree.inOrderTransversal());
                 Console.WriteLine(string.Join(", ", myList));
                 myTree.printTree();
             }
         }
 
+
+
         static void Main(string[] args)
         {
 
-            test2();
-
+            //deleteTest();
+            test3();
         }
     }
 }

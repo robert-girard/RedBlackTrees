@@ -22,7 +22,7 @@ namespace Trees
         {
             this.root = null;
             this.size = 0;
-            Console.SetBufferSize(Console.BufferWidth, 500);
+            Console.SetBufferSize(Console.BufferWidth, 1000);
         }
 
         public abstract void insert(T value);
